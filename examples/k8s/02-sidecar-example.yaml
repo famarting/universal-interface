@@ -1,0 +1,83 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: books-service
+  name: books-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: books-service
+  template:
+    metadata:
+      labels:
+        app: books-service
+    spec:
+      containers:
+      - image: quay.io/famargon/uninterface-example-books-service:latest
+        imagePullPolicy: Always
+        name: books-service
+        # readinessProbe:
+        #   httpGet:
+        #     path: /health/ready
+        #     port: 8080
+        #   initialDelaySeconds: 3
+        #   periodSeconds: 5
+        #   timeoutSeconds: 7
+        # livenessProbe:
+        #   httpGet:
+        #     path: /health/live
+        #     port: 8080
+        #   initialDelaySeconds: 1
+        #   periodSeconds: 15
+        #   timeoutSeconds: 7
+      - image: quay.io/famargon/uninterface:latest
+        name: uninterface
+        imagePullPolicy: Always
+        env:
+          - name: CONFIG_FILE
+            value: /etc/uninterface/config.yaml
+        volumeMounts:
+          - name: config-volume
+            mountPath: /etc/uninterface
+      volumes:
+        - name: config-volume
+          configMap:
+            name: uninterface-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: books-service
+  name: books-service
+spec:
+  ports:    
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+    name: http
+  selector:
+    app: books-service
+  type: ClusterIP
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  labels:
+    app: books-service
+  name: books-service-ingress
+spec:
+  rules:
+  - host: books-service.127.0.0.1.nip.io
+    http:
+      paths:
+      - backend:
+          serviceName: books-service
+          servicePort: 8080
+        path: /

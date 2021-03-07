@@ -1,0 +1,8 @@
+docstores:
+  - name: example
+    url: mem://example-collection/ID?filename=example-collection
+    idField: ID
+  - name: mongo
+    url: mongo://foo/my-collection?id_field=ID
+    connectionString: mongodb://localhost:27017
+    idField: ID

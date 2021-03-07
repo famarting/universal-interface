@@ -1,0 +1,11 @@
+kind: ConfigMap 
+apiVersion: v1 
+metadata:
+  name: uninterface-config
+data:
+  config.yaml: | 
+    docstores:
+    - name: example
+      url: mongo://foo/my-collection?id_field=id
+      connectionString: mongodb://admin:password@mongo-database:27017
+      idField: id

@@ -1,0 +1,4 @@
+docstores:
+  - name: example
+    url: mem://example-collection/id?filename=java-client-example
+    idField: id
