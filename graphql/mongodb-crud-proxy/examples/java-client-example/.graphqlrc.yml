@@ -1,0 +1,26 @@
+schema: ./schema.graphql
+documents: ./client-schema.graphql
+extensions:
+  codegen:
+    generates:
+      ./src/main/java/io/uninterface/examples/crud/Types.java:
+        config:
+          scalars:
+            GraphbackDate: Date
+            GraphbackDateTime: Date
+            GraphbackJSON: Object
+            # GraphbackJSONObject: '{ [key: string]: any }'
+            GraphbackObjectID: String
+            GraphbackTime: String
+            GraphbackTimestamp: number
+        plugins:
+          - java
+          # - java-resolvers
+  graphback:
+    model: ./Book.graphql
+    plugins:
+      graphback-client:
+          outputFile: ./client-schema.graphql
+      graphback-schema:
+        format: graphql
+        outputPath: ./schema.graphql

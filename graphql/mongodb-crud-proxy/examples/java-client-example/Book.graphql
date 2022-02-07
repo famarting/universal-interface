@@ -1,0 +1,13 @@
+"""
+@model
+@datasync(
+  ttl: 5184000
+)
+"""
+type Book {
+  _id: GraphbackObjectID!
+  name: String!
+  author: String
+}
+
+scalar GraphbackObjectID

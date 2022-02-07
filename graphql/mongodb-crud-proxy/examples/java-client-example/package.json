@@ -1,0 +1,16 @@
+{
+  "name": "java-client-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate": "graphql-codegen"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@graphql-codegen/cli": "^1.21.2",
+    "@graphql-codegen/java": "^1.18.0"
+  }
+}

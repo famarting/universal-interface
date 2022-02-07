@@ -1,0 +1,30 @@
+version: '3.1'
+
+services:
+  mongodb:
+    image: mongo:latest
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+      - MONGO_INITDB_DATABASE=notes
+      - MONGO_INITDB_ROOT_USERNAME=mongodb
+      - MONGO_INITDB_ROOT_PASSWORD=mongo
+    # ports:
+    #     - 27017:27017
+    command: mongod
+  crud-proxy:
+    image: quay.io/famargon/uninterface-gqlcurd-mongo:latest
+    ports:
+      - 7878:7878
+    environment:
+      - DB_USER=mongodb
+      - DB_PASSWORD=mongo
+      - DB_HOST=mongodb
+      - DB_PORT=27017
+      - DB_DATABASE=notes
+      - DB_AUTHSOURCE=admin
+      - GRAPHQL_MODEL=/etc/gqlcrud/Note.graphql
+    volumes:
+      - ${PWD}/Note.graphql:/etc/gqlcrud/Note.graphql
+    depends_on:
+      - mongodb

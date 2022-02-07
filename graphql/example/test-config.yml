@@ -1,0 +1,8 @@
+schema: ./schema/schema.graphql
+extensions:
+  graphback:
+    model: ./*.graphql
+    # plugins:
+    #   graphback-schema:
+    #     format: graphql
+    #     outputPath: ./src/schema/schema.graphql

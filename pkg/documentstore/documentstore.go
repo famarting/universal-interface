@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/famartinrh/uninterface/pkg/config"
@@ -115,6 +116,19 @@ type DocumentStore struct {
 	collection *docstore.Collection
 }
 
+type Query struct {
+	Conditions       []queryCondition `json:"conditions,omitempty"`
+	Limit            int              `json:"limit,omitempty"`
+	OrderByField     string           `json:"orderBy"`
+	OrderByDirection string           `json:"sort"`
+}
+
+type queryCondition struct {
+	field string      `json:"field"`
+	op    string      `json:"op"`
+	value interface{} `json:"value"`
+}
+
 func NewDocumentStore(config config.Docstore) (*DocumentStore, error) {
 	if config.ConnectionString != "" {
 		os.Setenv("MONGO_SERVER_URL", config.ConnectionString)
@@ -150,4 +164,47 @@ func (store DocumentStore) Get(document map[string]interface{}) error {
 
 func (store DocumentStore) Delete(document map[string]interface{}) error {
 	return store.collection.Delete(context.TODO(), document)
+}
+
+func (store DocumentStore) Query(query Query) error {
+	collection := store.collection
+	q := collection.Query()
+
+	for _, cond := range query.Conditions {
+		q = q.Where(docstore.FieldPath(cond.field), cond.op, cond.value)
+	}
+
+	limit := 100
+	if query.Limit != 0 {
+		limit = query.Limit
+	}
+	q = q.Limit(limit)
+
+	orderByField := store.IDField
+	if query.OrderByField != "" {
+		orderByField = query.OrderByField
+	}
+	orderByDirection := "asc"
+	if query.OrderByDirection != "" {
+		orderByDirection = query.OrderByDirection
+	}
+	q = q.OrderBy(orderByField, orderByDirection)
+
+	iter := q.Get(context.TODO())
+	iter.
+
+	defer iter.Stop()
+	for {
+		var msg Message
+		err := iter.Next(ctx, &msg)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to list: %v\n", err)
+			return err
+		}
+		fmt.Println("Doc query")
+		fmt.Println(msg)
+	}
 }

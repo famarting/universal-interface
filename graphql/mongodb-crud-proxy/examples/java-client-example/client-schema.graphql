@@ -1,0 +1,69 @@
+fragment BookFields on Book {
+   _id
+   name
+   author
+
+} 
+
+fragment BookExpandedFields on Book {
+   _id
+   name
+   author
+
+} 
+
+query findBooks($filter: BookFilter, $page: PageRequest, $orderBy: OrderByInput) {
+    findBooks(filter: $filter, page: $page, orderBy: $orderBy) {
+      items {
+        ...BookExpandedFields
+      }
+      offset
+      limit
+      count
+    }
+  }
+
+query getBook($id: GraphbackObjectID!) {
+    getBook(id: $id) {
+      ...BookExpandedFields
+    }
+  }
+
+mutation createBook($input: CreateBookInput!) {
+  createBook(input: $input) {
+      ...BookFields
+  }
+}
+
+
+mutation updateBook($input: MutateBookInput!) {
+  updateBook(input: $input) {
+      ...BookFields
+  }
+}
+
+
+mutation deleteBook($input: MutateBookInput!) {
+  deleteBook(input: $input) {
+      ...BookFields
+  }
+}
+
+
+subscription newBook($filter: BookSubscriptionFilter) {
+  newBook(filter: $filter) {
+      ...BookFields
+  }
+} 
+
+subscription updatedBook($filter: BookSubscriptionFilter) {
+  updatedBook(filter: $filter) {
+      ...BookFields
+  }
+} 
+
+subscription deletedBook($filter: BookSubscriptionFilter) {
+  deletedBook(filter: $filter) {
+      ...BookFields
+  }
+} 
